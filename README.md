@@ -1,5 +1,5 @@
 # AVL Tree
-AVL (balanced) binary search tree
+AVL (balanced) binary search tree. Numbers as values
 
 * Node.js v8.4.0
 
