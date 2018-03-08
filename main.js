@@ -11,7 +11,6 @@ function Node(value, left = null, right = null) {
   };
 }
 
-// todo
 function height(node) {
   if (!node) {
     return 0;
