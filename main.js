@@ -10,15 +10,45 @@ function Node(value, left = null, right = null) {
   };
 }
 
+// todo
+function height(node) {
+  if (!node) {
+    return 0;
+  }
+  let heightOfLeftNode = height(node.left);
+  let heightOfRightNode = height(node.right);
+  return heightOfLeftNode > heightOfRightNode ?
+    heightOfLeftNode + 1 :
+    heightOfRightNode + 1;
+}
+
+// todo
+function isUnbalanced(parent) {
+
+}
+
+// todo
+function coerceAvlProperty(parent) {
+  if (isUnbalanced(parent)) {
+
+  }
+}
+
 function insert(value, root, parent = null) {
   if (value >= root.value) {
-    root.right ?
-      insert(value, root.right, root) :
+    if (root.right) {
+      insert(value, root.right, root);
+    } else {
       root.right = Node(value);
+      coerceAvlProperty(parent);
+    }
   } else {
-    root.left ?
-      insert(value, root.left, root) :
+    if (root.left) {
+      insert(value, root.left, root);
+    } else {
       root.left = Node(value);
+      coerceAvlProperty(parent);
+    }
   }
 }
 
@@ -44,7 +74,9 @@ let root = Node(null);
 let nums = range(1, 8);
 
 buildAvlTree(nums, root);
-console.log("Before insert:", JSON.stringify(root, null, 2));
+console.log("Tree:", JSON.stringify(root, null, 2));
 
 insert(5.5, root);
 console.log("After insert:", JSON.stringify(root, null, 2));
+
+console.log("Height:", height(root))
