@@ -1,6 +1,7 @@
 "use strict";
 
 const { range } = require("./utils");
+const render = require("./render");
 
 function Node(value, left = null, right = null) {
   return {
@@ -74,9 +75,9 @@ let root = Node(null);
 let nums = range(1, 8);
 
 buildAvlTree(nums, root);
-console.log("Tree:", JSON.stringify(root, null, 2));
+console.log("Tree:", render(root));
 
 insert(5.5, root);
-console.log("After insert:", JSON.stringify(root, null, 2));
+console.log("After insert:", render(root));
 
 console.log("Height:", height(root))
