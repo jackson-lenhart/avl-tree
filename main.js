@@ -34,6 +34,15 @@ function coerceAvlProperty(parent) {
   }
 }
 
+function inOrderTraversal(root) {
+  if (!root) {
+    return;
+  }
+  inOrderTraversal(root.left);
+  console.log(root.value);
+  inOrderTraversal(root.right);
+}
+
 function insert(value, root, parent = null) {
   if (value >= root.value) {
     if (root.right) {
@@ -80,3 +89,6 @@ insert(5.5, root);
 console.log("After insert:", render(root));
 
 console.log("Height:", height(root))
+
+console.log("Sorted order:");
+inOrderTraversal(root);
