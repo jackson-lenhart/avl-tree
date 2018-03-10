@@ -22,15 +22,68 @@ function height(node) {
     heightOfRightNode + 1;
 }
 
-// todo
-function isUnbalanced(parent) {
+// will return type of imbalance i.e. "LL", "LR", etc. or false if no imabalance is found
+function findImbalance(parent) {
+  if (parent.left) {
+    if (!parent.right) {
+      if (parent.left.left) {
+        return "LL";
+      } else if (parent.left.right) {
+        return "LR";
+      }
+    }
+  } else if (parent.right) {
+    if (!parent.left) {
+      if (parent.right.right) {
+        return "RR";
+      } else if (parent.right.left) {
+        return "RL";
+      }
+    }
+  }
+  return false;
+}
 
+function rightRotate(parent) {
+  let temp = parent.value;
+  parent.value = parent.left.value;
+  parent.right = Node(temp);
+  parent.left.value = parent.left.left.value;
+  parent.left.left = null;
+}
+
+function leftRotate(parent) {
+  let temp = parent.value;
+  parent.value = parent.right.value;
+  parent.left = Node(temp);
+  // handle 1st rotate in double rotate sequence to fix zig-zag
+  if (!parent.right.right) {
+    parent.right = null;
+  } else {
+    parent.right.value = parent.right.right ? parent.right.right.value : null;
+    parent.right.right = null;
+  }
 }
 
 // todo
-function coerceAvlProperty(parent) {
-  if (isUnbalanced(parent)) {
-
+function restoreAvlProperty(parent, typeOfImbalance) {
+  switch (typeOfImbalance) {
+    case "LL":
+      rightRotate(parent);
+      break;
+    case "LR":
+      leftRotate(parent.left);
+      rightRotate(parent);
+      break;
+    case "RR":
+      leftRotate(parent);
+      break;
+    case "RL":
+      rightRotate(parent.right);
+      leftRotate(parent);
+      break;
+    default:
+      console.error("Invalid typeOfImbalance passed to restoreAvlProperty");
   }
 }
 
@@ -44,19 +97,28 @@ function inOrderTraversal(root) {
 }
 
 function insert(value, root, parent = null) {
+  if (value === 0.5) {
+    console.log("While inserting 0.5:", render(root));
+  }
   if (value >= root.value) {
     if (root.right) {
       insert(value, root.right, root);
     } else {
       root.right = Node(value);
-      coerceAvlProperty(parent);
+      let typeOfImbalance = findImbalance(parent);
+      if (typeOfImbalance) {
+        restoreAvlProperty(parent, typeOfImbalance);
+      }
     }
   } else {
     if (root.left) {
       insert(value, root.left, root);
     } else {
       root.left = Node(value);
-      coerceAvlProperty(parent);
+      let typeOfImbalance = findImbalance(parent);
+      if (typeOfImbalance) {
+        restoreAvlProperty(parent, typeOfImbalance);
+      }
     }
   }
 }
@@ -86,7 +148,16 @@ buildAvlTree(nums, root);
 console.log("Tree:", render(root));
 
 insert(5.5, root);
-console.log("After insert:", render(root));
+console.log("After insert 1:", render(root));
+
+insert(5.8, root);
+console.log("After insert 2:", render(root));
+
+insert(0, root);
+console.log("After insert 3, creating zig-zag...:", render(root));
+
+insert(0.5, root);
+console.log("After insert 4, zig-zag fixed", render(root));
 
 console.log("Height:", height(root))
 
