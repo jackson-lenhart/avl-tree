@@ -22,6 +22,13 @@ function height(node) {
     heightOfRightNode + 1;
 }
 
+function nodeCount(root) {
+  if (!root) {
+    return 0;
+  }
+  return 1 + nodeCount(root.left) + nodeCount(root.right);
+}
+
 // will return type of imbalance i.e. "LL", "LR", etc. or false if no imabalance is found
 function findImbalance(parent) {
   if (parent.left) {
@@ -65,7 +72,6 @@ function leftRotate(parent) {
   }
 }
 
-// todo
 function restoreAvlProperty(parent, typeOfImbalance) {
   switch (typeOfImbalance) {
     case "LL":
@@ -148,18 +154,19 @@ buildAvlTree(nums, root);
 console.log("Tree:", render(root));
 
 insert(5.5, root);
-console.log("After insert 1:", render(root));
+console.log("After insert 5.5 (1st insert):", render(root));
 
 insert(5.8, root);
-console.log("After insert 2:", render(root));
+console.log("After insert 5.8 (2nd insert):", render(root));
 
 insert(0, root);
-console.log("After insert 3, creating zig-zag...:", render(root));
+console.log("After insert 0 (3rd insert), creating zig-zag...:", render(root));
 
 insert(0.5, root);
-console.log("After insert 4, zig-zag fixed", render(root));
+console.log("After insert 0.5 (4th insert), zig-zag fixed", render(root));
 
 console.log("Height:", height(root))
+console.log("Node count:", nodeCount(root));
 
 console.log("Sorted order:");
 inOrderTraversal(root);
