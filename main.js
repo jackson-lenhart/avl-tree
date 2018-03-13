@@ -15,11 +15,23 @@ function height(node) {
   if (!node) {
     return 0;
   }
-  let heightOfLeftNode = height(node.left);
-  let heightOfRightNode = height(node.right);
-  return heightOfLeftNode > heightOfRightNode ?
-    heightOfLeftNode + 1 :
-    heightOfRightNode + 1;
+  let heightOfLeftChild = height(node.left);
+  let heightOfRightChild = height(node.right);
+  return heightOfLeftChild > heightOfRightChild ?
+    heightOfLeftChild + 1 :
+    heightOfRightChild + 1;
+}
+
+function satisfiesAvlProperty(root) {
+  if (!root) {
+    return true;
+  }
+  let heightOfLeftChild = height(root.left);
+  let heightOfRightChild = height(root.right);
+  if (Math.abs(heightOfLeftChild - heightOfRightChild) > 1) {
+    return false;
+  }
+  return satisfiesAvlProperty(root.left) && satisfiesAvlProperty(root.right);
 }
 
 function nodeCount(root) {
@@ -29,8 +41,8 @@ function nodeCount(root) {
   return 1 + nodeCount(root.left) + nodeCount(root.right);
 }
 
-// will return type of imbalance i.e. "LL", "LR", etc. or false if no imabalance is found
-function findImbalance(parent) {
+// will return type of imbalance i.e. "LL", "LR", etc. or false if no imbalance is found
+function determineTypeOfImbalance(parent) {
   if (parent.left) {
     if (!parent.right) {
       if (parent.left.left) {
@@ -51,42 +63,35 @@ function findImbalance(parent) {
   return false;
 }
 
-function rightRotate(parent) {
+function rotate(parent, direction) {
+  let otherDirection = direction === "left" ? "right" : "left";
   let temp = parent.value;
-  parent.value = parent.left.value;
-  parent.right = Node(temp);
-  parent.left.value = parent.left.left.value;
-  parent.left.left = null;
-}
-
-function leftRotate(parent) {
-  let temp = parent.value;
-  parent.value = parent.right.value;
-  parent.left = Node(temp);
+  parent.value = parent[otherDirection].value;
+  parent[direction] = Node(temp);
   // handle 1st rotate in double rotate sequence to fix zig-zag
-  if (!parent.right.right) {
-    parent.right = null;
+  if (!parent[otherDirection][otherDirection]) {
+    parent[otherDirection] = null;
   } else {
-    parent.right.value = parent.right.right ? parent.right.right.value : null;
-    parent.right.right = null;
+    parent[otherDirection].value = parent[otherDirection][otherDirection].value;
+    parent[otherDirection][otherDirection] = null;
   }
 }
 
 function restoreAvlProperty(parent, typeOfImbalance) {
   switch (typeOfImbalance) {
     case "LL":
-      rightRotate(parent);
+      rotate(parent, "right");
       break;
     case "LR":
-      leftRotate(parent.left);
-      rightRotate(parent);
+      rotate(parent.left, "left");
+      rotate(parent, "right");
       break;
     case "RR":
-      leftRotate(parent);
+      rotate(parent, "left")
       break;
     case "RL":
-      rightRotate(parent.right);
-      leftRotate(parent);
+      rotate(parent.right, "right");
+      rotate(parent, "left");
       break;
     default:
       console.error("Invalid typeOfImbalance passed to restoreAvlProperty");
@@ -103,29 +108,28 @@ function inOrderTraversal(root) {
 }
 
 function insert(value, root, parent = null) {
-  if (value === 0.5) {
-    console.log("While inserting 0.5:", render(root));
-  }
   if (value >= root.value) {
     if (root.right) {
       insert(value, root.right, root);
     } else {
       root.right = Node(value);
-      let typeOfImbalance = findImbalance(parent);
+      let typeOfImbalance = determineTypeOfImbalance(parent);
       if (typeOfImbalance) {
         restoreAvlProperty(parent, typeOfImbalance);
       }
     }
-  } else {
+  } else if (value < root.value) {
     if (root.left) {
       insert(value, root.left, root);
     } else {
       root.left = Node(value);
-      let typeOfImbalance = findImbalance(parent);
+      let typeOfImbalance = determineTypeOfImbalance(parent);
       if (typeOfImbalance) {
         restoreAvlProperty(parent, typeOfImbalance);
       }
     }
+  } else if (isNaN(value)) {
+    throw new Error("Invalid type. Insert numbers only");
   }
 }
 
@@ -147,26 +151,11 @@ function buildAvlTree(sortedArr, root) {
   }
 }
 
-let root = Node(null);
-let nums = range(1, 8);
-
-buildAvlTree(nums, root);
-console.log("Tree:", render(root));
-
-insert(5.5, root);
-console.log("After insert 5.5 (1st insert):", render(root));
-
-insert(5.8, root);
-console.log("After insert 5.8 (2nd insert):", render(root));
-
-insert(0, root);
-console.log("After insert 0 (3rd insert), creating zig-zag...:", render(root));
-
-insert(0.5, root);
-console.log("After insert 0.5 (4th insert), zig-zag fixed", render(root));
-
-console.log("Height:", height(root))
-console.log("Node count:", nodeCount(root));
-
-console.log("Sorted order:");
-inOrderTraversal(root);
+module.exports = {
+  buildAvlTree,
+  determineTypeOfImbalance,
+  insert,
+  Node,
+  nodeCount,
+  satisfiesAvlProperty
+};
