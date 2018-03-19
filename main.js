@@ -107,10 +107,10 @@ function inOrderTraversal(root) {
   inOrderTraversal(root.right);
 }
 
-function insert(value, root, parent = null) {
+function insertNode(value, root, parent = null) {
   if (value >= root.value) {
     if (root.right) {
-      insert(value, root.right, root);
+      insertNode(value, root.right, root);
     } else {
       root.right = Node(value);
       let typeOfImbalance = determineTypeOfImbalance(parent);
@@ -120,7 +120,7 @@ function insert(value, root, parent = null) {
     }
   } else if (value < root.value) {
     if (root.left) {
-      insert(value, root.left, root);
+      insertNode(value, root.left, root);
     } else {
       root.left = Node(value);
       let typeOfImbalance = determineTypeOfImbalance(parent);
@@ -129,7 +129,37 @@ function insert(value, root, parent = null) {
       }
     }
   } else if (isNaN(value)) {
-    throw new Error("Invalid type. Insert numbers only");
+    throw new Error("Invalid type. insertNode numbers only");
+  }
+}
+
+function deleteNode(value, root, parent = null, direction = null) {
+  if (!root) {
+    return "Value not found, could not deleteNode";
+  }
+  if (value >= root.value) {
+    deleteNode(value, root.right, root, "right");
+  } else if (value < root.value) {
+    deleteNode(value, root.left, root, "left");
+  } else if (value === root.value) {
+    //has no children
+    if (!root.left && !root.right) {
+      parent[direction] = null;
+
+    //has only right child
+    } else if (!root.left) {
+
+    //has only left child
+    } else if (!root.right) {
+
+    //has 2 children
+    } else {
+
+    }
+  } else {
+    if (isNaN(value)) {
+      throw new Error("deleteNode expects only numbers to be passed as values");
+    }
   }
 }
 
@@ -154,7 +184,7 @@ function buildAvlTree(sortedArr, root) {
 module.exports = {
   buildAvlTree,
   determineTypeOfImbalance,
-  insert,
+  insertNode,
   Node,
   nodeCount,
   satisfiesAvlProperty

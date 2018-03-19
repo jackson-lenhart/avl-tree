@@ -3,7 +3,7 @@
 const {
   buildAvlTree,
   determineTypeOfImbalance,
-  insert,
+  insertNode,
   Node,
   nodeCount,
   satisfiesAvlProperty
@@ -40,7 +40,7 @@ console.log("Tree 1:", render(mockRoot));
 console.log("Tree 1 satisfies AVL property?:", satisfiesAvlProperty(mockRoot));
 
 // would introduce imbalance if not for rotations
-insert(-5, mockRoot);
+insertNode(-5, mockRoot);
 console.log("Tree 1 after insert of -5 with rotations:", render(mockRoot));
 
 // this should still log true
